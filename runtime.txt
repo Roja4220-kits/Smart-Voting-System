@@ -1,1 +1,1 @@
-runtime.txt
+rpython-3.10.13
