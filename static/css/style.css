@@ -1,0 +1,323 @@
+
+/* ================= GLOBAL STYLES ================= */
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    color: white;
+    text-align: center;
+}
+
+.container {
+    margin-top: 80px;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 42px;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+h2, h3 {
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    font-size: 18px;
+    margin-bottom: 30px;
+    opacity: 0.9;
+}
+
+footer {
+    margin-top: 60px;
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+/* ================= BUTTONS ================= */
+
+button {
+    padding: 12px 28px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    margin: 10px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+}
+
+.primary-btn {
+    background-color: #28a745;
+    color: white;
+}
+
+.primary-btn:hover {
+    background-color: #218838;
+    transform: translateY(-2px);
+}
+
+
+.secondary-btn {
+    background-color: #6f42c1;
+    color: white;
+}
+
+.secondary-btn:hover {
+    background-color: #5a32a3;
+    transform: translateY(-2px);
+}
+
+/* ================= LINKS ================= */
+
+a {
+    color: #ffffff;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.back-link {
+    margin-top: 40px;
+}
+
+/* ================= FEATURES SECTION ================= */
+
+.features ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 40px;
+}
+
+.features li {
+    margin: 8px 0;
+    font-size: 17px;
+}
+
+/* ================= FORM STYLING ================= */
+
+.form-box {
+    margin-top: 30px;
+}
+
+input[type="text"],
+input[type="password"] {
+    padding: 12px;
+    width: 260px;
+    border-radius: 6px;
+    border: none;
+    font-size: 16px;
+    margin-bottom: 15px;
+    outline: none;
+}
+
+input:focus {
+    box-shadow: 0 0 5px #00c6ff;
+}
+
+.error-box {
+    margin-top: 20px;
+    color: #ff4d4d;
+    font-weight: bold;
+}
+
+.info-box {
+    margin-top: 20px;
+    text-align: left;
+    display: inline-block;
+    background: rgba(255,255,255,0.1);
+    padding: 15px 20px;
+    border-radius: 8px;
+}
+
+.info-box ul {
+    list-style: none;
+    padding: 0;
+}
+
+.info-box li {
+    margin: 8px 0;
+}
+
+/* ================= VOTING PAGE ================= */
+
+.candidate-grid {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 30px;
+    margin-top: 30px;
+}
+
+.candidate-card {
+    background: white;
+    color: black;
+    padding: 20px;
+    border-radius: 12px;
+    width: 230px;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+}
+
+.candidate-card:hover {
+    transform: scale(1.05);
+}
+
+.leader-img {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.symbol-img {
+    width: 60px;
+    margin-top: 10px;
+}
+
+.vote-select {
+    margin-top: 15px;
+}
+
+/* ================= RESULTS PAGE ================= */
+
+/* ================= RESULTS PAGE ================= */
+
+.results-box {
+    margin-top: 30px;
+    background: white;
+    color: #222;
+    padding: 30px;
+    border-radius: 15px;
+    width: 85%;
+    margin-left: auto;
+    margin-right: auto;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
+
+.result-card {
+    background: white;
+    color: black;
+    padding: 15px;
+    margin: 10px auto;
+    width: 280px;
+    border-radius: 10px;
+    font-weight: 600;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.winner-text {
+    margin: 30px auto;
+    padding: 20px;
+    width: 350px;
+    background: rgba(0, 255, 128, 0.15);
+    border: 2px solid #00e676;
+    border-radius: 12px;
+    font-size: 22px;
+    font-weight: bold;
+    color: #ffffff;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(0, 230, 118, 0.4);
+}
+
+
+
+
+
+/* ================= CHART ================= */
+
+canvas {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    margin-top: 20px;
+}
+
+/* ================= ADMIN / DASHBOARD LOOK ================= */
+
+.admin-box {
+    background: rgba(255,255,255,0.1);
+    padding: 20px;
+    border-radius: 10px;
+    display: inline-block;
+    margin-top: 30px;
+}
+.party-box {
+    margin-top: 8px;
+    padding: 6px 10px;
+    background-color: #f1f1f1;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    color: #333;
+}
+.success-title {
+    font-size: 30px;
+    margin-bottom: 20px;
+    color: #28a745;
+}
+
+/* Animated Emoji */
+.animated-icon {
+    display: inline-block;
+    margin-right: 10px;
+    font-size: 36px;
+    animation: popBounce 1s ease forwards;
+}
+
+/* Pop + Bounce Effect */
+@keyframes popBounce {
+    0% {
+        transform: scale(0.2);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.3);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+
+/* Align buttons in one row like screenshot */
+.button-group {
+    margin-top: 30px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.button-group a {
+    text-decoration: none;
+}
+
+.button-group button {
+    min-width: 220px;
+    height: 48px;
+}
+
+/* Officer Button Style */
+.officer-btn {
+    background-color: #ffc107;
+    color: white;
+}
+
+.officer-btn:hover {
+    background-color: #e0a800;
+    transform: translateY(-2px);
+}

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Officer Authorization</title>
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}">
+
+<style>
+
+body{
+margin:0;
+font-family:'Segoe UI',sans-serif;
+background:linear-gradient(to right,#0f2027,#203a43,#2c5364);
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+}
+
+.card{
+background:rgba(255,255,255,0.95);
+padding:40px;
+width:420px;
+border-radius:18px;
+text-align:center;
+box-shadow:0 20px 50px rgba(0,0,0,0.35);
+color:black;
+}
+
+.loader{
+margin:20px auto;
+border:6px solid #f3f3f3;
+border-top:6px solid #28a745;
+border-radius:50%;
+width:55px;
+height:55px;
+animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+0%{transform:rotate(0deg);}
+100%{transform:rotate(360deg);}
+}
+
+.status{
+margin-top:20px;
+font-weight:bold;
+background:#fff3cd;
+padding:10px;
+border-radius:8px;
+color:#856404;
+}
+
+/* ===== FAKE SMS POPUP ===== */
+
+.sms-popup{
+
+position:fixed;
+top:-200px;
+right:20px;
+width:320px;
+background:white;
+border-radius:14px;
+box-shadow:0 15px 40px rgba(0,0,0,0.4);
+padding:18px;
+z-index:2000;
+transition:top 0.5s ease;
+font-size:14px;
+color:#000;
+font-weight:bold
+
+}
+
+.sms-header{
+font-weight:bold;
+color:#333;
+margin-bottom:6px;
+}
+
+.sms-number{
+color:#888;
+font-size:12px;
+}
+
+.sms-body{
+margin-top:10px;
+font-size:15px;
+}
+
+.sms-buttons{
+margin-top:15px;
+display:flex;
+justify-content:space-between;
+}
+
+.sms-btn{
+padding:8px 16px;
+border:none;
+border-radius:6px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.approve-btn{
+background:#28a745;
+color:white;
+}
+
+.reject-btn{
+background:#dc3545;
+color:white;
+}
+
+/* ===== MODAL ===== */
+
+.modal{
+display:none;
+position:fixed;
+z-index:1000;
+left:0;
+top:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+justify-content:center;
+align-items:center;
+}
+
+.modal-content{
+background:white;
+padding:30px;
+width:360px;
+border-radius:16px;
+text-align:center;
+box-shadow:0 20px 50px rgba(0,0,0,0.3);
+color:#000;
+}
+
+.modal-btn{
+margin-top:15px;
+padding:10px 20px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<div class="loader"></div>
+
+<h2>🔐 Officer Authorization Required</h2>
+
+<p>Please wait while the officer verifies this voter.</p>
+
+<div class="status">
+Status: Waiting for Approval...
+</div>
+
+<br>
+
+<button onclick="noMobile()" 
+style="
+background:#007bff;
+color:white;
+border:none;
+padding:10px 16px;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
+">
+
+📵 Don't have mobile?
+
+</button>
+
+<p id="officerHelpMsg" style="
+display:none;
+margin-top:10px;
+color:#000;
+font-weight:bold;
+">
+
+Don't worry, officer will help you.
+
+</p>
+
+</div>
+
+<!-- Fake SMS Notification -->
+
+<div id="smsPopup" class="sms-popup">
+
+<div class="sms-header">
+📩 New SMS
+</div>
+
+<div class="sms-number">
+Election Commission
+</div>
+
+<div class="sms-body">
+OTP verification request received.<br><br>
+Approve voter authentication?
+</div>
+
+<div class="sms-buttons">
+
+<button class="sms-btn approve-btn"
+onclick="approveVote()">Approve</button>
+
+<button class="sms-btn reject-btn"
+onclick="rejectVote()">Reject</button>
+
+</div>
+
+</div>
+
+
+<!-- OTP Expired Modal -->
+
+<div id="expiredModal" class="modal">
+
+<div class="modal-content">
+
+<h3>⏳ OTP Expired</h3>
+
+<p id="expiryMessage">Your verification code has expired.</p>
+
+<p><b>Attempts Left: <span id="attemptsLeft">3</span></b></p>
+
+<button class="modal-btn"
+style="background:#28a745;color:white;"
+onclick="resendOtp()">🔁 Resend OTP</button>
+
+<button class="modal-btn"
+style="background:#dc3545;color:white;"
+onclick="goHome()">Cancel</button>
+
+</div>
+
+</div>
+<!-- OTP REJECTED MODAL -->
+
+<div id="rejectModal" class="modal">
+
+<div class="modal-content">
+
+<h3>❌ OTP Rejected</h3>
+
+<p>Sorry! OTP was not accepted.</p>
+
+<button class="modal-btn"
+style="background:#dc3545;color:white;"
+onclick="goHome()">
+
+Back to Home
+
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+/* ===== SHOW SMS POPUP ===== */
+
+setTimeout(()=>{
+
+document.getElementById("smsPopup").style.top="20px"
+
+},2000);
+
+
+/* ===== APPROVE / REJECT ACTIONS ===== */
+
+
+
+function approveVote(){
+
+fetch("/approve_otp/{{ session['voter_id'] }}")
+
+.then(response => response.json())
+
+.then(data => {
+
+console.log("OTP Approved");
+
+})
+
+}
+
+function rejectVote(){
+
+fetch("/reject_otp/{{ session['voter_id'] }}")
+
+.then(response => response.json())
+
+.then(data => {
+
+document.getElementById("rejectModal").style.display="flex";
+
+})
+
+}
+
+
+/* ===== ORIGINAL EVENT STREAM ===== */
+
+const eventSource = new EventSource("/otp_stream");
+
+eventSource.onmessage=function(event){
+
+const data = JSON.parse(event.data);
+
+if(data.status==="APPROVED"){
+window.location.replace("/voting");
+}
+
+if(data.status==="REJECTED"){
+document.getElementById("rejectModal").style.display="flex";
+
+}
+
+if(data.status==="EXPIRED"){
+showExpiredModal(data.attempts_left);
+}
+
+if(data.status==="LOCKED"){
+showLockedMessage();
+}
+
+}
+
+
+/* ===== OTP EXPIRED ===== */
+
+function showExpiredModal(attempts){
+
+document.getElementById("attemptsLeft").innerText=attempts;
+
+document.getElementById("expiredModal").style.display="flex";
+
+}
+
+
+/* ===== RESEND OTP ===== */
+
+function resendOtp(){
+
+fetch("/resend_otp")
+
+.then(response=>response.json())
+
+.then(data=>{
+
+if(data.status==="RESENT"){
+
+document.getElementById("attemptsLeft").innerText=data.attempts_left;
+
+document.getElementById("expiryMessage").innerText=
+"New OTP generated. Please wait for officer approval.";
+
+setTimeout(()=>{
+
+document.getElementById("expiredModal").style.display="none";
+
+},1500);
+
+}
+
+if(data.status==="LOCKED"){
+showLockedMessage();
+}
+
+})
+
+}
+
+
+/* ===== LOCKED ===== */
+
+function showLockedMessage(){
+
+document.getElementById("expiryMessage").innerText=
+"Maximum attempts reached. Restarting verification...";
+
+setTimeout(()=>{
+
+window.location.replace("/")
+
+},2000);
+
+}
+
+
+function goHome(){
+
+window.location.replace("/")
+
+}
+function noMobile(){
+
+document.getElementById("officerHelpMsg").style.display="block";
+
+}
+
+</script>
+
+</body>
+</html>

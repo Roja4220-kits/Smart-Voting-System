@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>New Voter Registration</title>
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}">
+
+<style>
+
+/* Professional Background */
+body{
+    background:linear-gradient(135deg,#0f2027,#203a43,#2c5364);
+    font-family:Segoe UI, sans-serif;
+}
+
+.register-wrapper{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:85vh;
+}
+
+.register-card{
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(12px);
+    padding:40px;
+    width:500px;
+    border-radius:18px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.35);
+    text-align:center;
+    color:white;
+}
+
+.register-card input{
+    width:100%;
+    padding:12px;
+    margin-bottom:15px;
+    border-radius:8px;
+    border:none;
+}
+
+.section-title{
+    margin-top:15px;
+    margin-bottom:8px;
+    font-weight:600;
+}
+
+.upload-box{
+    border:2px dashed white;
+    padding:15px;
+    cursor:pointer;
+    border-radius:10px;
+}
+
+.upload-success{
+    color:lightgreen;
+    font-weight:600;
+    margin-top:8px;
+    display:none;
+}
+
+video{
+    width:100%;
+    margin-top:10px;
+    border-radius:12px;
+    display:none;
+}
+
+.capture-status{
+    color:lightgreen;
+    font-weight:600;
+    margin-top:8px;
+}
+
+.error-text{
+    color:#ff6b6b;
+    font-weight:600;
+    margin-top:10px;
+}
+
+/* Modal */
+.modal{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.6);
+    justify-content:center;
+    align-items:center;
+    z-index:999;
+}
+
+.modal-content{
+    background:white;
+    padding:25px;
+    border-radius:12px;
+    width:350px;
+    text-align:center;
+    color:black;
+}
+
+.modal-content h3,
+.modal-content p{
+    color:black;
+}
+
+.modal-content button{
+    margin-top:15px;
+    padding:8px 18px;
+    border:none;
+    background:#2e8b57;
+    color:white;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+</style>
+</head>
+<body>
+
+<div class="container">
+<h1 style="text-align:center;color:white;margin-top:20px;">
+🆕 New Voter Registration
+</h1>
+</div>
+
+<div class="register-wrapper">
+<div class="register-card">
+
+{% if success %}
+
+<h2>✅ Registration Successful!</h2>
+<p>Your Voter ID:</p>
+<h3>{{ voter_id }}</h3>
+
+<a href="{{ url_for('index') }}">
+<button class="primary-btn">🏠 Back to Home</button>
+</a>
+
+{% else %}
+
+<form method="POST" enctype="multipart/form-data" onsubmit="return validateForm();">
+
+<input type="text" name="aadhaar_id"
+placeholder="Enter 12-digit Aadhaar ID"
+pattern="\d{12}" required>
+
+<!-- Date of Birth -->
+<input type="date"
+name="dob"
+required>
+
+<!-- Mobile Number -->
+<input type="text"
+name="mobile"
+placeholder="Enter 10-digit Mobile Number"
+pattern="\d{10}"
+required>
+
+<input type="text" name="name"
+placeholder="Enter Full Name" required>
+
+<input type="text" name="village"
+placeholder="Enter Village" required>
+
+<input type="text" name="voting_center"
+placeholder="Enter Voting Center" required>
+
+<div class="section-title">
+📤 Upload Profile Photo (Optional)
+</div>
+
+<div class="upload-box"
+onclick="document.getElementById('imageUpload').click()">
+Click to Upload Image
+</div>
+
+<input type="file"
+id="imageUpload"
+name="profile_image"
+accept="image/*"
+hidden>
+
+<div id="uploadSuccess" class="upload-success">
+✔ Image uploaded successfully
+</div>
+
+<hr style="margin:20px 0;">
+
+<div class="section-title">
+📷 Face Capture (Required for Voting Authentication)
+</div>
+
+<button type="button" onclick="startCamera()">Start Camera</button>
+
+<video id="video" autoplay></video>
+
+<button type="button" id="captureBtn" onclick="captureImage()">
+Capture Image
+</button>
+
+<div id="captureCount" class="capture-status"></div>
+
+<input type="hidden" name="captured_images" id="capturedImages">
+
+<button type="submit"
+class="primary-btn"
+style="margin-top:20px;width:100%;">
+Register Voter
+</button>
+
+</form>
+
+{% if error %}
+<div class="error-text">
+{{ error }}
+</div>
+{% endif %}
+
+{% endif %}
+
+</div>
+</div>
+
+<!-- Modal -->
+<div id="customModal" class="modal">
+    <div class="modal-content">
+        <h3 id="modalTitle"></h3>
+        <p id="modalMessage"></p>
+        <button onclick="closeModal()">OK</button>
+    </div>
+</div>
+
+<script>
+
+let video = document.getElementById("video");
+let capturedImages = [];
+let captureCount = document.getElementById("captureCount");
+
+document.getElementById('imageUpload').onchange = function(e){
+    if(e.target.files.length > 0){
+        document.getElementById("uploadSuccess").style.display="block";
+    }
+};
+
+function startCamera(){
+    video.style.display="block";
+    navigator.mediaDevices.getUserMedia({video:true})
+    .then(stream => {
+        video.srcObject = stream;
+    })
+    .catch(() => showModal(
+        "Camera Access Denied",
+        "Please allow camera permission to continue."
+    ));
+}
+
+function captureImage(){
+
+    if(!video.srcObject){
+        showModal(
+            "Camera Not Started",
+            "Please start the camera before capturing images."
+        );
+        return;
+    }
+
+    if(capturedImages.length >= 3){
+        showModal(
+            "Capture Limit Reached",
+            "You have already captured 3 images."
+        );
+        return;
+    }
+
+    let canvas = document.createElement("canvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+
+    let ctx = canvas.getContext("2d");
+    ctx.drawImage(video,0,0);
+
+    let imageData = canvas.toDataURL("image/jpeg");
+    capturedImages.push(imageData);
+
+    captureCount.innerHTML =
+        "✔ Images Captured: "
+        + capturedImages.length + " / 3";
+
+    document.getElementById("capturedImages").value =
+        JSON.stringify(capturedImages);
+
+    if(capturedImages.length === 3){
+
+        showModal(
+            "Capture Completed",
+            "All 3 face images captured successfully."
+        );
+
+        // Stop Camera
+        let tracks = video.srcObject.getTracks();
+        tracks.forEach(track => track.stop());
+
+        video.style.display="none";
+
+        // Disable Capture Button
+        document.getElementById("captureBtn").disabled = true;
+    }
+}
+
+function validateForm(){
+
+    if(capturedImages.length < 3){
+        showModal(
+            "Face Capture Required",
+            "Please capture all 3 face images to complete registration."
+        );
+        return false;
+    }
+
+    return true;
+}
+
+function showModal(title, message){
+    document.getElementById("modalTitle").innerText = title;
+    document.getElementById("modalMessage").innerText = message;
+    document.getElementById("customModal").style.display = "flex";
+}
+
+function closeModal(){
+    document.getElementById("customModal").style.display = "none";
+}
+
+</script>
+
+</body>
+</html>

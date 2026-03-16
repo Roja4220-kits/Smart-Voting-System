@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Smart Voting System</title>
+
+<link rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}">
+
+<style>
+
+.register-btn{
+background-color:#007bff;
+color:white;
+}
+
+.register-btn:hover{
+background-color:#0056b3;
+}
+
+
+
+/* MARQUEE BAR DESIGN */
+
+.marquee-bar{
+width:100%;
+background: linear-gradient(90deg,#ff7e5f,#feb47b,#4facfe,#43e97b);
+color:white;
+padding:10px 0;
+font-family:"Brush Script MT", cursive;
+font-size:28px;
+font-weight:bold;
+text-align:center;
+letter-spacing:1px;
+box-shadow:0 3px 10px rgba(0,0,0,0.3);
+}
+
+.marquee-bar marquee{
+text-shadow:1px 1px 5px rgba(0,0,0,0.6);
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- HEADER -->
+
+<header style="text-align:center;padding:10px;">
+<h3></h3>
+</header>
+<!-- MARQUEE BAR -->
+
+<div class="marquee-bar">
+    <marquee behavior="alternate" scrollamount="6">
+        Welcome To Smart Voting System Portal !!!
+    </marquee>
+</div>
+
+<div class="container">
+
+<h1>🗳 Smart Voting System</h1>
+
+<p class="subtitle">
+Secure Multi-Layer Authentication Based Voting Platform
+</p>
+
+<div class="info-box">
+
+<ul>
+
+<li>✔ Identity Verification</li>
+<li>✔ Face Liveness Detection</li>
+<li>✔ Offline OTP Authentication</li>
+<li>✔ Secure Vote Casting</li>
+<li>✔ Admin Protected Results</li>
+
+</ul>
+
+</div>
+
+<div class="button-group">
+
+<a href="{{ url_for('register') }}">
+<button class="register-btn">
+🆕 New Voter Registration
+</button>
+</a>
+
+<a href="{{ url_for('identity') }}">
+<button class="primary-btn">
+🚀 Start Voting
+</button>
+</a>
+
+<a href="{{ url_for('officer_login') }}">
+<button class="officer-btn">
+👮 Officer Login
+</button>
+</a>
+
+<a href="{{ url_for('admin') }}">
+<button class="secondary-btn">
+🛡 Admin Login
+</button>
+</a>
+
+</div>
+
+<footer>
+
+<p>
+© 2026 Smart Voting System | Final Year Project
+</p>
+
+</footer>
+
+</div>
+
+</body>
+</html>

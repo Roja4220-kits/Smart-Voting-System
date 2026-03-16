@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Officer Dashboard</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+}
+
+/* Main Card */
+.dashboard-card {
+    width: 92%;
+    margin: 40px auto;
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+    color: black; /* ✅ Force black text */
+}
+
+h2 {
+    text-align: center;
+    color: #0b3d91;
+    margin-bottom: 25px;
+}
+
+/* Summary Boxes */
+.summary {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 30px;
+}
+
+.summary-box {
+    padding: 18px 30px;
+    border-radius: 12px;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+    min-width: 160px;
+    font-size: 16px;
+}
+
+.waiting-box { background: #ffc107; color: black; }
+.approved-box { background: #28a745; }
+.rejected-box { background: #dc3545; }
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+th {
+    background-color: #0b3d91;
+    color: white;
+    padding: 14px;
+    font-size: 15px;
+}
+
+td {
+    padding: 14px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+    color: black; /* ✅ FIXED */
+    font-weight: 500;
+}
+
+tr:hover {
+    background-color: #f2f7ff;
+}
+
+/* Status Badges */
+.status-approved {
+    color: white;
+    background: #28a745;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.status-waiting {
+    color: black;
+    background: #ffc107;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+.status-rejected {
+    color: white;
+    background: #dc3545;
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+}
+
+/* Buttons */
+.btn-approve {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.btn-reject {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.btn-approve:hover,
+.btn-reject:hover {
+    opacity: 0.85;
+}
+
+/* Footer Info */
+.auto-refresh-info {
+    text-align: center;
+    margin-top: 20px;
+    font-size: 13px;
+    color: #555;
+}
+</style>
+</head>
+
+<body>
+
+<div class="dashboard-card">
+
+    <h2>🛡 OTP Approval Dashboard</h2>
+
+    <!-- Summary -->
+    <div class="summary">
+        <div class="summary-box waiting-box">
+            Waiting<br>
+            <span id="waitingCount">{{ waiting_count }}</span>
+        </div>
+
+        <div class="summary-box approved-box">
+            Approved<br>
+            <span id="approvedCount">{{ approved_count }}</span>
+        </div>
+
+        <div class="summary-box rejected-box">
+            Rejected<br>
+            <span id="rejectedCount">{{ rejected_count }}</span>
+        </div>
+    </div>
+
+    <!-- Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>Voter ID</th>
+                <th>OTP</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody id="table-body">
+        {% for voter in voters %}
+        <tr>
+            <td>{{ voter.voter_id }}</td>
+            <td>{{ voter.otp }}</td>
+
+            <td>
+                {% if voter.status == "APPROVED" %}
+                    <span class="status-approved">Approved</span>
+                {% elif voter.status == "REJECTED" %}
+                    <span class="status-rejected">Rejected</span>
+                {% elif voter.status == "EXPIRED" %}
+                    <span class="status-rejected">Expired</span>
+                {% else %}
+                    <span class="status-waiting">Waiting</span>
+                {% endif %}
+            </td>
+
+            <td>
+{% if voter.status == "WAITING" %}
+
+<button class="btn-approve"
+onclick="approveOTP('{{ voter.voter_id }}')">
+Approve
+</button>
+
+<button class="btn-reject"
+onclick="rejectOTP('{{ voter.voter_id }}')">
+Reject
+</button>
+
+{% else %}
+<span style="color:#28a745; font-weight:bold;">✅ Done</span>
+{% endif %}
+</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="auto-refresh-info">
+        🔄 Live updates every 5 seconds
+    </div>
+
+</div>
+
+<script>
+function refreshDashboard() {
+    fetch("/officer_dashboard_data")
+        .then(response => response.json())
+        .then(data => {
+
+            document.getElementById("waitingCount").innerText = data.waiting;
+            document.getElementById("approvedCount").innerText = data.approved;
+            document.getElementById("rejectedCount").innerText = data.rejected;
+
+            document.getElementById("table-body").innerHTML = data.table_html;
+        });
+}
+
+setInterval(refreshDashboard, 5000);
+
+function approveOTP(voterId){
+
+fetch("/approve_otp/" + voterId)
+.then(response => response.json())
+.then(data => {
+
+console.log("Approved:", voterId);
+
+refreshDashboard();   // refresh table
+
+})
+
+}
+
+function rejectOTP(voterId){
+
+fetch("/reject_otp/" + voterId)
+.then(response => response.json())
+.then(data => {
+
+console.log("Rejected:", voterId);
+
+refreshDashboard();   // refresh table
+
+})
+
+}
+</script>
+
+</body>
+</html>

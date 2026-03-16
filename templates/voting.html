@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Official Voting Panel</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+        }
+
+        .container {
+            width: 90%;
+            margin: 40px auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 10px 30px rgba(0,0,0,0.3);
+            color: #333;
+            transition: 0.3s ease;
+        }
+
+        .blur {
+            filter: blur(6px);
+            pointer-events: none;
+            user-select: none;
+        }
+
+        h1 {
+            text-align: center;
+            color: #0b3d91;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            text-align: center;
+            margin-bottom: 25px;
+            color: #555;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            background-color: #0b3d91;
+            color: white;
+            padding: 12px;
+            text-align: center;
+        }
+
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background-color: #f1f5ff;
+        }
+
+        .leader-img {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+        }
+
+        .symbol-img {
+            width: 50px;
+            height: 50px;
+        }
+
+        .nota-row {
+            background-color: #eef3ff;
+            font-weight: bold;
+        }
+
+        .primary-btn {
+            display: block;
+            margin: 25px auto 0;
+            padding: 12px 30px;
+            background-color: #0b3d91;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        .primary-btn:hover {
+            background-color: #072c6c;
+        }
+
+        .error-box {
+            margin-top: 20px;
+            text-align: center;
+            color: red;
+            font-weight: bold;
+        }
+
+        /* ===== MODAL STYLES ===== */
+        .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    inset: 0;
+    background: rgba(0,0,0,0.4);   /* 🔹 Dark background */
+    backdrop-filter: blur(6px);    /* 🔹 Blur effect */
+    justify-content: center;
+    align-items: center;
+}
+
+        
+.modal-content {
+    background: #ffffff;
+    color: #1a1a1a;
+    padding: 35px;
+    border-radius: 14px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.25);
+    animation: fadeIn 0.25s ease;
+    text-align: center;   /* optional improvement */
+    width: 380px;         /* optional improvement for better alignment */
+}
+
+
+
+
+        .modal-buttons {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .btn-confirm {
+    background: linear-gradient(135deg, #0b3d91, #1f5bd8);
+    color: #ffffff;
+}
+
+.modal-buttons button {
+    padding: 8px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+
+        .btn-cancel {
+    background: #f0f0f0;
+    color: #333;
+}
+.modal-content {
+    animation: fadeIn 0.25s ease;
+}
+
+.warning-title {
+    color: #c0392b;
+    font-weight: bold;
+}
+
+
+        @keyframes fadeIn {
+            from {transform: scale(0.9); opacity: 0;}
+            to {transform: scale(1); opacity: 1;}
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container" id="mainContainer">
+
+    <h1>🗳 Official Electronic Voting System</h1>
+    <p class="subtitle">Please select your preferred candidate below</p>
+
+    <form method="POST" id="voteForm">
+
+        <table>
+            <tr>
+                <th>Candidate ID</th>
+                <th>Candidate</th>
+                <th>Party Name</th>
+                <th>Symbol</th>
+                <th>Vote</th>
+            </tr>
+
+            {% for candidate in candidates %}
+            {% if candidate.party_name != "None Of The Above" %}
+            <tr>
+                <td>{{ candidate.candidate_id }}</td>
+                <td>
+                    <img src="{{ url_for('static',
+                    filename='images/leaders/' + candidate.leader_image) }}"
+                    class="leader-img"><br>
+                    {{ candidate.leader_name }}
+                </td>
+                <td>{{ candidate.party_name }}</td>
+                <td>
+                    <img src="{{ url_for('static',
+                    filename='images/symbols/' + candidate.symbol_image) }}"
+                    class="symbol-img">
+                </td>
+                <td>
+                    <input type="radio"
+                           name="selected_candidate"
+                           value="{{ candidate.candidate_id }}">
+                </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+
+            {% for candidate in candidates %}
+            {% if candidate.party_name == "None Of The Above" %}
+            <tr class="nota-row">
+                <td>{{ candidate.candidate_id }}</td>
+                <td colspan="2">None Of The Above</td>
+                <td>
+                    <img src="{{ url_for('static',
+                    filename='images/leaders/' + candidate.leader_image) }}"
+                    class="symbol-img">
+                </td>
+                <td>
+                    <input type="radio"
+                           name="selected_candidate"
+                           value="{{ candidate.candidate_id }}">
+                </td>
+            </tr>
+            {% endif %}
+            {% endfor %}
+
+        </table>
+
+        <button type="button" class="primary-btn" onclick="openModal()">
+            Submit Vote
+        </button>
+
+    </form>
+
+    {% if error %}
+    <div class="error-box">{{ error }}</div>
+    {% endif %}
+
+</div>
+
+<!-- ===== MODAL ===== -->
+<div class="modal" id="confirmModal">
+    <div class="modal-content">
+        <h3>Confirm Your Vote</h3>
+        <p>Are you sure you want to cast your vote?<br>This action cannot be changed.</p>
+
+        <div class="modal-buttons">
+            <button class="btn-confirm" onclick="submitVote()">Yes</button>
+            <button class="btn-cancel" onclick="closeModal()">No</button>
+        </div>
+    </div>
+</div>
+<!-- ===== WARNING MODAL ===== -->
+<div class="modal" id="warningModal">
+    <div class="modal-content">
+        <h3 style="color:#c0392b;">⚠ No Candidate Selected</h3>
+        <p>Please select a candidate before submitting your vote.</p>
+
+        <div class="modal-buttons">
+            <button class="btn-confirm" onclick="closeWarning()">OK</button>
+        </div>
+    </div>
+</div>
+
+<script>
+function openModal() {
+    const selected = document.querySelector('input[name="selected_candidate"]:checked');
+
+    if (!selected) {
+        document.getElementById("warningModal").style.display = "flex";
+        document.getElementById("mainContainer").classList.add("blur");
+        return;
+    }
+
+    // ✅ Open confirmation modal
+    document.getElementById("confirmModal").style.display = "flex";
+    document.getElementById("mainContainer").classList.add("blur");
+}
+
+
+function closeModal() {
+    document.getElementById("confirmModal").style.display = "none";
+    document.getElementById("mainContainer").classList.remove("blur");
+}
+
+function submitVote() {
+    document.getElementById("voteForm").submit();
+}
+function closeWarning() {
+    document.getElementById("warningModal").style.display = "none";
+    document.getElementById("mainContainer").classList.remove("blur");
+}
+
+</script>
+
+</body>
+</html>

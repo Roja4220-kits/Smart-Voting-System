@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Vote Successful</title>
+
+<style>
+
+body{
+    font-family: Arial;
+    background: linear-gradient(135deg,#4facfe,#00f2fe);
+    text-align:center;
+    padding-top:120px;
+}
+
+.card{
+    width:450px;
+    margin:auto;
+    background:white;
+    padding:35px;
+    border-radius:12px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.25);
+}
+
+h2{
+    color:#28a745;
+}
+
+p{
+    font-size:18px;
+}
+
+.sms-btn{
+    margin-top:25px;
+    padding:14px 25px;
+    font-size:16px;
+    border:none;
+    border-radius:6px;
+    background:#007bff;
+    color:white;
+    cursor:pointer;
+}
+
+.sms-btn:hover{
+    background:#0056b3;
+}
+
+.home-btn{
+    margin-top:15px;
+    padding:12px 20px;
+    font-size:15px;
+    border:none;
+    border-radius:6px;
+    background:#6c757d;
+    color:white;
+    cursor:pointer;
+}
+
+.home-btn:hover{
+    background:#545b62;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<h2>✅ Vote Cast Successfully</h2>
+
+<p>
+Thank you <b>{{name}}</b> for participating in the election.
+</p>
+
+<p>Your vote has been securely recorded.</p>
+
+<p>📩 A confirmation SMS has been sent to your registered mobile number.</p>
+
+<br>
+
+<a href="{{ url_for('index') }}">
+
+<button class="home-btn">
+🏠 Back to Home
+</button>
+
+</a>
+
+</div>
+
+</body>
+</html>

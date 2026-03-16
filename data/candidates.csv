@@ -1,0 +1,7 @@
+candidate_id,leader_name,party_name,symbol_image,leader_image,votes
+C001,Candidate-A,abc_party,abc_party.png,A.jpg,6
+C002,Candidate-B,XYZ Party,xyz_party.png,B.jpg,5
+C003,Candidate-C,People First Party,pfp_party.png,C.jpg,13
+C004,Candidate-D,National Reform Party,nrp_party.png,D.jpg,7
+C005,Candidate-E,Independent,independent.png,E.jpg,8
+C006,NOTA,None Of The Above,nota.png,nota.png,3

@@ -1,0 +1,62 @@
+
+{% for voter in voters %}
+<tr>
+    <!-- Voter Name -->
+    <td style="color:black;">
+        {{ voter.voter_id }}
+
+
+       
+    </td>
+        
+
+    <!-- OTP -->
+    <td style="color:black;">
+        
+        {{ voter.otp }}
+
+        
+    </td>
+
+    <!-- Status -->
+    <td>
+        {% if voter.status == "APPROVED" %}
+            <span class="status-approved">Approved</span>
+
+        {% elif voter.status == "REJECTED" %}
+            <span class="status-rejected">Rejected</span>
+
+        {% elif voter.status == "EXPIRED" %}
+            <span class="status-rejected">Expired</span>
+
+        {% else %}
+            <span class="status-waiting">Waiting</span>
+        {% endif %}
+    </td>
+
+    <!-- Action -->
+    <td>
+        {% if voter.status == "WAITING" %}
+
+            <a href="{{ url_for('approve_otp_route', voter_id=voter.voter_id) }}">
+                <button class="btn-approve">Approve</button>
+            </a>
+
+            <a href="{{ url_for('reject_otp_route', voter_id=voter.voter_id) }}">
+                <button class="btn-reject">Reject</button>
+            </a>
+
+        {% else %}
+            <span style="color:#28a745; font-weight:bold;">✅ Done</span>
+        {% endif %}
+    </td>
+</tr>
+{% endfor %}
+
+{% if voters|length == 0 %}
+<tr>
+    <td colspan="4" style="text-align:center; padding:20px; color:#777;">
+        No OTP requests available
+    </td>
+</tr>
+{% endif %}

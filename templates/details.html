@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Voter Details Confirmation</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<div class="container">
+
+    <h1>🧾 Confirm Voter Details</h1>
+
+    <!-- ===== VOTER IMAGE ===== -->
+<div style="margin-top:20px; text-align:center;">
+    <img src="{{ url_for('static', filename=image_path) }}"
+         width="200"
+         style="border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,0.4);">
+</div>
+
+
+
+
+    <!-- ===== VOTER DETAILS ===== -->
+    <div class="info-box" style="margin-top:20px;">
+        <p><b>Name:</b> {{ session['voter_name'] }}</p>
+        <p><b>Voter ID:</b> {{ session['voter_id'] }}</p>
+        <p><b>Village:</b> {{ session['village'] }}</p>
+        <p><b>Voting Center:</b> {{ session['voting_center'] }}</p>
+    </div>
+
+    <!-- ===== CONFIRM MESSAGE ===== -->
+    <p style="margin-top:20px; font-weight:bold; color:#00ffcc;">
+        Please verify that the above details are correct.
+    </p>
+
+    <!-- ===== BUTTONS ===== -->
+    <div style="margin-top:20px; display:flex; justify-content:center; gap:20px;">
+
+        <!-- Back Button -->
+        <form action="{{ url_for('identity') }}">
+            <button type="submit" class="secondary-btn">
+                ⬅ Back
+            </button>
+        </form>
+
+        <!-- Proceed Button -->
+        <form method="POST">
+            <button type="submit" class="primary-btn">
+                Proceed to Face Verification ➡
+            </button>
+        </form>
+
+    </div>
+
+</div>
+
+</body>
+</html>

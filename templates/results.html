@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="5">
+
+    <title>Election Results</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+          
+          
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>📊 Election Results</h1>
+    <p class="subtitle">Official Vote Count Summary</p>
+
+    <!-- ================= BAR CHART ================= -->
+    {% if results %}
+    <div style="width:70%; margin:auto;">
+        <canvas id="voteChart"></canvas>
+    </div>
+    {% else %}
+        <p>No results available.</p>
+    {% endif %}
+
+    <!-- ================= WINNER ================= -->
+    <div class="winner-text">
+        🏆 Winner: <b>{{ winner }}</b>
+    </div>
+
+    <!-- ================= STATISTICS ================= -->
+    <div class="results-box">
+        <h3>📈 Statistics</h3>
+        <p><b>Total Voters:</b> {{ total }}</p>
+        <p><b>Votes Cast:</b> {{ cast }}</p>
+        <p><b>Turnout:</b> {{ turnout }}%</p>
+    </div>
+
+    <br>
+
+    <a href="{{ url_for('index') }}">
+        <button class="primary-btn">Back to Home</button>
+    </a>
+
+</div>
+
+<!-- ================= CHART SCRIPT ================= -->
+{% if results %}
+<script>
+    const candidateNames = {{ results | map(attribute='leader_name') | list | tojson }};
+    const voteCounts = {{ results | map(attribute='votes') | list | tojson }};
+
+    const votes = voteCounts.map(v => parseInt(v));
+    const sortedVotes = [...votes].sort((a, b) => b - a);
+
+    function getRoyalBlueShade(position, total) {
+
+        const ratio = position / (total - 1 || 1);
+
+        // DARK → LIGHT Royal Blue scale
+        const r = Math.round(10 + (100 * ratio));   // 10 → 110
+        const g = Math.round(40 + (140 * ratio));   // 40 → 180
+        const b = Math.round(120 + (120 * ratio));  // 120 → 240
+
+        return `rgba(${r}, ${g}, ${b}, 0.95)`;
+    }
+
+    const totalCandidates = votes.length;
+
+    const backgroundColors = votes.map(v => {
+        const position = sortedVotes.indexOf(v);
+        return getRoyalBlueShade(position, totalCandidates);
+    });
+
+    const borderColors = backgroundColors.map(c =>
+        c.replace("0.95", "1")
+    );
+
+    const ctx = document.getElementById('voteChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: candidateNames,
+            datasets: [{
+                label: 'Votes',
+                data: votes,
+                backgroundColor: backgroundColors,
+                borderColor: borderColors,
+                borderWidth: 2,
+                borderRadius: 14
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    labels: {
+                        font: { size: 14 }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { precision: 0 }
+                }
+            },
+            animation: {
+                duration: 1400,
+                easing: 'easeOutCubic'
+            }
+        }
+    });
+</script>
+
+
+{% endif %}
+
+</body>
+</html>

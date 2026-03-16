@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Vote Successful</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+
+        /* Use same background as project */
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+
+        .success-container {
+            width: 50%;
+            margin: 120px auto;
+            background: white;
+            color: #222;
+            padding: 45px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.35);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .success-container h1 {
+            color: #28a745; /* match your primary green */
+            margin-bottom: 15px;
+            font-size: 32px;
+        }
+
+        .success-container p {
+            font-size: 18px;
+            color: #444;
+            margin: 8px 0;
+        }
+
+        .primary-btn {
+            margin-top: 30px;
+        }
+
+        /* Smooth animation */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="success-container">
+    
+    <h1 class="success-title"><span class="animated-icon">✨Vote Cast Successfully🎉</span></h1>
+    
+   
+    
+    <p>🙏 Thank you <b>{{ name }}</b> for participating in the election.</p>
+    <p>🔐 Your vote has been securely recorded.</p>
+    <p>📩 A confirmation has been registered successfully.</p>
+   
+
+
+    <a href="{{ url_for('index') }}">
+        <button class="primary-btn">Back to Home</button>
+    </a>
+</div>
+
+</body>
+</html>
