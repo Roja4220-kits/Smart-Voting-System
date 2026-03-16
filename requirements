@@ -1,7 +1,0 @@
-Flask
-pandas
-numpy
-opencv-python-headless
-Pillow
-gunicorn
-reportlab
