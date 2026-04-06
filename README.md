@@ -1,4 +1,4 @@
-📦 Installation Guide
+📦**Installation Guide**
 
 Follow these steps to set up the environment and install all required dependencies for the Smart Voting System with Face Recognition.
 
